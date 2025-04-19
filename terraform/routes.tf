@@ -5,8 +5,8 @@ resource "aws_route_table" "public_routes" {
   for_each = var.public_subnet_cidrs
   vpc_id   = aws_vpc.vpc.id
   tags = {
-    Name          = "biotornic-${var.environment}-public-${substr(each.value, -1, -1)}",
-    Exposure      = "public"
+    Name     = "biotornic-${var.environment}-public-${substr(each.value, -1, -1)}",
+    Exposure = "public"
   }
 
   route {
@@ -15,17 +15,30 @@ resource "aws_route_table" "public_routes" {
   }
 }
 
+# For production usage to have a NAT gateway in each subnet (HA)
+
+# resource "aws_route_table" "private_routes" {
+#   for_each = var.private_subnet_cidrs
+#   vpc_id   = aws_vpc.vpc.id
+#   tags = {
+#     Name          = "biotornic-${var.environment}-private-${substr(each.value, -1, -1)}",
+#     Exposure      = "private"
+#   }
+
+#   route {
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.vpc_nats[each.value].id
+#   }
+# }
+
+# All private routes use the same gateway (Single AZ NAT Gateway Model)
 resource "aws_route_table" "private_routes" {
   for_each = var.private_subnet_cidrs
-  vpc_id   = aws_vpc.vpc.id
-  tags = {
-    Name          = "biotornic-${var.environment}-private-${substr(each.value, -1, -1)}",
-    Exposure      = "private"
-  }
 
+  vpc_id = aws_vpc.vpc.id
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.vpc_nats[each.key].id
+    nat_gateway_id = aws_nat_gateway.shared_nat.id
   }
 }
 

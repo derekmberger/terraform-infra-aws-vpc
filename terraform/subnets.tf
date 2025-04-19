@@ -8,8 +8,9 @@ resource "aws_subnet" "private_subnets" {
   availability_zone       = each.value
   map_public_ip_on_launch = false
   tags = {
-    Name          = "biotornic-${var.environment}-private-${substr(each.value, -1, -1)}",
-    Exposure      = "private"
+    Name = "${var.org_name}-${var.environment}-private-${local.az_suffix_map[each.value]}"
+    Role = "private-subnet"
+    AZ   = each.value
   }
 }
 
@@ -19,8 +20,10 @@ resource "aws_subnet" "public_subnets" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = each.value
   map_public_ip_on_launch = true
+
   tags = {
-    Name          = "biotornic-${var.environment}-public-${substr(each.value, -1, -1)}",
-    Exposure      = "public"
+    Name = "${var.org_name}-${var.environment}-private-${local.az_suffix_map[each.value]}"
+    Role = "private-subnet"
+    AZ   = each.value
   }
 }

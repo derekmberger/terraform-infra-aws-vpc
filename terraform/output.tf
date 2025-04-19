@@ -34,10 +34,10 @@ output "public_subnets_cidr_blocks" {
 
 output "private_routing_tables" {
   description = "List of private routing table ids"
-  value = values(aws_route_table.private_routes)[*].id
+  value       = values(aws_route_table.private_routes)[*].id
 }
 
 output "public_routing_tables" {
   description = "List of public routing table ids"
-  value = values(aws_route_table.public_routes)[*].id
+  value       = values(aws_route_table.public_routes)[*].id
 }
